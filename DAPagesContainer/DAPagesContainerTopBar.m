@@ -11,6 +11,7 @@
 
 @interface DAPagesContainerTopBar ()
 
+@property (strong, nonatomic) UIImageView *backgroundImageView;
 @property (strong, nonatomic) UIScrollView *scrollView;
 @property (strong, nonatomic) NSArray *itemViews;
 
@@ -33,6 +34,7 @@ CGFloat const DAPagesContainerTopBarItemsOffset = 30.;
         self.scrollView.showsHorizontalScrollIndicator = NO;
         [self addSubview:self.scrollView];
         self.font = [UIFont systemFontOfSize:14];
+        self.itemTitleColor = [UIColor whiteColor];
     }
     return self;
 }
@@ -57,7 +59,22 @@ CGFloat const DAPagesContainerTopBarItemsOffset = 30.;
     }
 }
 
+- (void)setItemTitleColor:(UIColor *)itemTitleColor
+{
+    if (![_itemTitleColor isEqual:itemTitleColor]) {
+        _itemTitleColor = itemTitleColor;
+        for (UIButton *button in self.itemViews) {
+            [button setTitleColor:itemTitleColor forState:UIControlStateNormal];
+        }
+    }
+}
+
 #pragma mark * Overwritten setters
+
+- (void)setBackgroundImage:(UIImage *)backgroundImage
+{
+    self.backgroundImageView.image = backgroundImage;
+}
 
 - (void)setItemTitles:(NSArray *)itemTitles
 {
@@ -92,7 +109,7 @@ CGFloat const DAPagesContainerTopBarItemsOffset = 30.;
     UIButton *itemView = [[UIButton alloc] initWithFrame:frame];
     [itemView addTarget:self action:@selector(itemViewTapped:) forControlEvents:UIControlEventTouchUpInside];
     itemView.titleLabel.font = self.font;
-    [itemView setTitleColor:[UIColor colorWithWhite:0.6 alpha:1.] forState:UIControlStateNormal];
+    [itemView setTitleColor:self.itemTitleColor forState:UIControlStateNormal];
     [self.scrollView addSubview:itemView];
     return itemView;
 }
@@ -127,6 +144,18 @@ CGFloat const DAPagesContainerTopBarItemsOffset = 30.;
 {
     [super layoutSubviews];
     [self layoutItemViews];
+}
+
+#pragma mark * Lazy getters
+
+- (UIImageView *)backgroundImageView
+{
+    if (!_backgroundImageView) {
+        _backgroundImageView = [[UIImageView alloc] initWithFrame:self.bounds];
+        _backgroundImageView.autoresizingMask = UIViewAutoresizingFlexibleWidth | UIViewAutoresizingFlexibleHeight;
+        [self insertSubview:_backgroundImageView belowSubview:self.scrollView];
+    }
+    return _backgroundImageView;
 }
 
 @end
